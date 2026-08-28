@@ -1,0 +1,67 @@
+import telebot
+from telebot import types
+import time
+
+TOKEN = "TOKENINGIZNI_BU_YERGA_QOYING"
+bot = telebot.TeleBot(TOKEN)
+
+@bot.message_handler(commands=['start'])
+def start(message):
+    # Boshlang'ich xabar
+    msg = bot.send_message(message.chat.id, "⏳ Yuklanmoqda...")
+    
+    # Animatsiya
+    for text in ["⏳ Yuklanmoqda.", "⏳ Yuklanmoqda..", "⏳ Yuklanmoqda..."]:
+        time.sleep(0.4)
+        try:
+            bot.edit_message_text(
+                text,
+                message.chat.id,
+                msg.message_id
+            )
+        except:
+            pass
+
+    # Tugmalar
+    markup = types.InlineKeyboardMarkup(row_width=1)
+
+    aloqa = types.InlineKeyboardButton(
+        "📞 Men bilan aloqa",
+        callback_data="aloqa"
+    )
+
+    haqida = types.InlineKeyboardButton(
+        "🤖 Bot haqida",
+        callback_data="haqida"
+    )
+
+    markup.add(aloqa, haqida)
+
+    bot.edit_message_text(
+        "🔥 Botga xush kelibsiz!\n\nKerakli bo‘limni tanlang:",
+        message.chat.id,
+        msg.message_id,
+        reply_markup=markup
+    )
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "aloqa")
+def aloqa(call):
+    bot.answer_callback_query(call.id)
+    bot.send_message(
+        call.message.chat.id,
+        "📞 Men bilan aloqa:\n+998 94 996 83 89"
+    )
+
+
+@bot.callback_query_handler(func=lambda call: call.data == "haqida")
+def haqida(call):
+    bot.answer_callback_query(call.id)
+    bot.send_message(
+        call.message.chat.id,
+        "🤖 Bot haqida:\nBot hali yangi, sinab ko‘riladi."
+    )
+
+
+print("Bot ishga tushdi...")
+bot.infinity_polling()
